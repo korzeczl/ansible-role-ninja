@@ -1,0 +1,29 @@
+---
+# main tasks file for ninja build
+
+- name: Git checkout ninja
+  git:
+    repo: git://github.com/ninja-build/ninja.git
+    dest: /src/ninja
+    version: "v{{ ninja_version }}"
+    #todo: create ninja_download_dir variable
+
+- name: Creates build directory
+  file:
+    path: /tmp/build/ninja
+    state: directory
+  register: ninja_build_dir
+  #todo: create ninja_build_dir variable
+
+# Installing ninja build
+- name: Installing ninja
+  command: "{{ _item }} /src/ninja"
+  args:
+    chdir: "{{ ninja_build_dir.path }}"
+  with_items:
+    - cmake3 -DCMAKE_INSTALL_PREFIX=/usr
+    - make
+    - make install
+  loop_control:
+    loop_var: _item
+  #todo: create ninja_install_dir variable
